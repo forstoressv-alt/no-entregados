@@ -1,0 +1,110 @@
+{
+  "actualizado": "2026-03-31T23:59:00Z",
+  "empresa": "Forstore",
+  "total_registros": 342,
+  "no_entregados": [
+    {
+      "telefono": "7777777",
+      "nombre": "Juan Pérez",
+      "zona": "San Salvador, Centro",
+      "monto_promedio": 45.50,
+      "causa_frecuente": "No disponible",
+      "intentos_totales": 4,
+      "fecha": "2026-03-28",
+      "historial": [
+        {
+          "fecha": "2024-05-15",
+          "razon": "No disponible en dirección"
+        },
+        {
+          "fecha": "2024-06-22",
+          "razon": "Dirección equivocada"
+        },
+        {
+          "fecha": "2024-12-10",
+          "razon": "Rehusó recibir paquete"
+        },
+        {
+          "fecha": "2026-03-28",
+          "razon": "No disponible (reciente)"
+        }
+      ]
+    },
+    {
+      "telefono": "8888888",
+      "nombre": "María López",
+      "zona": "Santa Tecla",
+      "monto_promedio": 32.00,
+      "causa_frecuente": "Número incorrecto",
+      "intentos_totales": 2,
+      "fecha": "2026-03-25",
+      "historial": [
+        {
+          "fecha": "2025-08-14",
+          "razon": "Número de teléfono incorrecto"
+        },
+        {
+          "fecha": "2026-03-25",
+          "razon": "Dirección no precisa"
+        }
+      ]
+    },
+    {
+      "telefono": "9999999",
+      "nombre": "Carlos Rodríguez",
+      "zona": "San Martín",
+      "monto_promedio": 65.00,
+      "causa_frecuente": "No disponible",
+      "intentos_totales": 3,
+      "fecha": "2026-03-20",
+      "historial": [
+        {
+          "fecha": "2024-09-05",
+          "razon": "Cliente no disponible en horario"
+        },
+        {
+          "fecha": "2025-01-30",
+          "razon": "No contesta llamadas"
+        },
+        {
+          "fecha": "2026-03-20",
+          "razon": "Ubicación inaccesible"
+        }
+      ]
+    },
+    {
+      "telefono": "7654321",
+      "nombre": "Ana Martínez",
+      "zona": "Soyapango",
+      "monto_promedio": 28.75,
+      "causa_frecuente": "Rehusó",
+      "intentos_totales": 2,
+      "fecha": "2026-03-22",
+      "historial": [
+        {
+          "fecha": "2025-11-12",
+          "razon": "Cliente rehusó recibir"
+        },
+        {
+          "fecha": "2026-03-22",
+          "razon": "No quiso el producto"
+        }
+      ]
+    },
+    {
+      "telefono": "5551234",
+      "nombre": "Roberto García",
+      "zona": "Cuscatlán",
+      "monto_promedio": 55.25,
+      "causa_frecuente": "No disponible",
+      "intentos_totales": 1,
+      "fecha": "2026-03-29",
+      "historial": [
+        {
+          "fecha": "2026-03-29",
+          "razon": "No disponible en dirección (reciente)"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚚 Verificador de Entregas - Forstore</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #1a1a1a;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* HEADER */
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        /* STATUS BAR */
+        .status-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #667eea;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* SEARCH SECTION */
+        .search-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .search-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .search-wrapper {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        input[type="tel"] {
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        input[type="tel"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button.search-btn {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        button.search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .info-text {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        /* RESULT SECTION */
+        .result-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .result-section.active {
+            display: block;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* RISK LEVELS */
+        .risk-badge {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .risk-alto {
+            background: #ffebee;
+            color: #c62828;
+            border: 2px solid #c62828;
+        }
+
+        .risk-medio {
+            background: #fff3e0;
+            color: #e65100;
+            border: 2px solid #e65100;
+        }
+
+        .risk-bajo {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 2px solid #2e7d32;
+        }
+
+        /* CLIENT INFO */
+        .client-info {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 5px solid #667eea;
+        }
+
+        .client-info h3 {
+            color: #667eea;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* HISTORY */
+        .history-section {
+            margin-bottom: 25px;
+        }
+
+        .history-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .history-item {
+            background: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .history-item:hover {
+            background: #f0f0f0;
+            border-left-color: #667eea;
+        }
+
+        .history-date {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 0.95em;
+        }
+
+        .history-reason {
+            color: #888;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        /* ANALYSIS */
+        .analysis-section {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .analysis-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .analysis-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .analysis-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .analysis-value {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #667eea;
+            margin: 10px 0;
+        }
+
+        .analysis-label {
+            color: #888;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ACTION BUTTONS */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .btn-action {
+            padding: 15px 25px;
+            border: 2px solid;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-enviar {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-color: #2e7d32;
+        }
+
+        .btn-enviar:hover {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .btn-cancelar {
+            background: #ffebee;
+            color: #c62828;
+            border-color: #c62828;
+        }
+
+        .btn-cancelar:hover {
+            background: #c62828;
+            color: white;
+        }
+
+        /* SEARCH HISTORY */
+        .search-history {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 25px;
+        }
+
+        .search-history h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .history-list {
+            list-style: none;
+        }
+
+        .history-list li {
+            padding: 10px;
+            background: white;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95em;
+        }
+
+        .history-phone {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .history-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge-ok {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .badge-riesgo {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .badge-medio {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        /* LOADING */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f0f0f0;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .search-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .status-bar {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>🚚 Verificador de Entregas</h1>
+            <p>Forstore - Base de clientes con riesgo de no entrega</p>
+        </div>
+
+        <!-- STATUS BAR -->
+        <div class="status-bar">
+            <div class="stat-card">
+                <div class="stat-label">📞 Base de datos</div>
+                <div class="stat-number" id="totalClientes">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">⚠️ Nuevos hoy</div>
+                <div class="stat-number" id="clientesHoy">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">📈 Tasa de riesgo</div>
+                <div class="stat-number" id="tasaRiesgo">--</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">🔄 Actualizado</div>
+                <div class="stat-number" id="statusUpdate">--</div>
+            </div>
+        </div>
+
+        <!-- SEARCH SECTION -->
+        <div class="search-section">
+            <h2>🔍 Buscar Cliente</h2>
+            <div class="search-wrapper">
+                <input 
+                    type="tel" 
+                    id="telefonoBusqueda"
+                    placeholder="Escribe teléfono: 7777777 o +50377777777"
+                    autocomplete="off"
+                >
+                <button class="search-btn" onclick="buscarCliente()">Buscar</button>
+            </div>
+            <div class="info-text">
+                ℹ️ El sistema normaliza automáticamente el formato del teléfono
+            </div>
+        </div>
+
+        <!-- LOADING -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Buscando en la base de datos...</p>
+        </div>
+
+        <!-- RESULT SECTION -->
+        <div class="result-section" id="resultSection">
+            <div id="resultContent"></div>
+        </div>
+
+        <!-- EMPTY STATE -->
+        <div id="emptyState" class="empty-state">
+            <div class="empty-state-icon">📋</div>
+            <p>Usa el buscador para verificar teléfonos</p>
+            <p style="font-size: 0.9em; margin-top: 10px; color: #bbb;">
+                Cargando base de datos...
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURACIÓN GLOBAL
+        // ============================================
+        let baseDatos = [];
+        let historialBusquedas = JSON.parse(localStorage.getItem('historialBusquedas') || '[]');
+
+        // URL del archivo db.json en GitHub (cambiar cuando subas a tu repo)
+        const DB_URL = 'https://raw.githubusercontent.com/tu-usuario/cellworld-no-entregados/main/db.json';
+
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+        window.addEventListener('load', function() {
+            cargarBaseDatos();
+            document.getElementById('telefonoBusqueda').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') buscarCliente();
+            });
+        });
+
+        // ============================================
+        // CARGAR BASE DE DATOS
+        // ============================================
+        async function cargarBaseDatos() {
+            try {
+                const response = await fetch(DB_URL);
+                const data = await response.json();
+                baseDatos = data.no_entregados || [];
+                
+                actualizarEstadisticas();
+                console.log('✅ Base de datos cargada:', baseDatos.length, 'registros');
+            } catch (error) {
+                console.error('❌ Error cargando base de datos:', error);
+                document.getElementById('emptyState').innerHTML = `
+                    <div class="empty-state-icon">⚠️</div>
+                    <p>No se pudo cargar la base de datos</p>
+                    <p style="font-size: 0.9em; margin-top: 10px; color: #bbb;">
+                        Verifica que el archivo db.json esté en el repositorio y que la URL sea correcta
+                    </p>
+                `;
+            }
+        }
+
+        // ============================================
+        // ACTUALIZAR ESTADÍSTICAS
+        // ============================================
+        function actualizarEstadisticas() {
+            const hoy = new Date().toISOString().split('T')[0];
+            const clientesHoy = baseDatos.filter(c => c.fecha === hoy).length;
+            
+            document.getElementById('totalClientes').textContent = baseDatos.length;
+            document.getElementById('clientesHoy').textContent = clientesHoy;
+            
+            // Calcular tasa de riesgo (clientes con 2+ intentos)
+            const tasaRiesgo = baseDatos.filter(c => c.intentos_totales >= 2).length;
+            document.getElementById('tasaRiesgo').textContent = 
+                baseDatos.length > 0 ? Math.round((tasaRiesgo / baseDatos.length) * 100) + '%' : '0%';
+            
+            document.getElementById('statusUpdate').textContent = 'Hace poco';
+        }
+
+        // ============================================
+        // NORMALIZAR TELÉFONO
+        // ============================================
+        function normalizarTelefono(telefono) {
+            // Remove espacios, guiones, paréntesis
+            let clean = telefono.replace(/[\s\-\(\)]/g, '');
+            // Remove +503 si existe
+            clean = clean.replace(/^(\+503|503)/, '');
+            // Retornar solo dígitos
+            return clean;
+        }
+
+        // ============================================
+        // BUSCAR CLIENTE
+        // ============================================
+        function buscarCliente() {
+            const input = document.getElementById('telefonoBusqueda').value.trim();
+            
+            if (!input) {
+                alert('Por favor ingresa un teléfono');
+                return;
+            }
+
+            const telefonoNormalizado = normalizarTelefono(input);
+            
+            // Validar que tenga al menos 7 dígitos
+            if (telefonoNormalizado.length < 7) {
+                alert('El teléfono debe tener al menos 7 dígitos');
+                return;
+            }
+
+            mostrarLoading(true);
+
+            // Simular pequeño delay (para UX)
+            setTimeout(() => {
+                const cliente = baseDatos.find(c => c.telefono === telefonoNormalizado);
+                mostrarLoading(false);
+                
+                if (cliente) {
+                    mostrarResultadoCliente(cliente);
+                } else {
+                    mostrarResultadoOK(telefonoNormalizado);
+                }
+
+                // Guardar en historial
+                agregarAlHistorial(telefonoNormalizado, cliente ? 'riesgo' : 'ok');
+            }, 300);
+        }
+
+        // ============================================
+        // MOSTRAR RESULTADO CLIENTE CON RIESGO
+        // ============================================
+        function mostrarResultadoCliente(cliente) {
+            const riesgoNivel = cliente.intentos_totales >= 3 ? 'alto' : 'medio';
+            const riesgoTexto = riesgoNivel === 'alto' ? '⛔ ALTO RIESGO' : '⚠️ RIESGO MEDIO';
+            const riesgoBadge = `risk-${riesgoNivel}`;
+
+            let historialHTML = '';
+            if (cliente.historial && Array.isArray(cliente.historial)) {
+                historialHTML = cliente.historial.map(item => `
+                    <div class="history-item">
+                        <div class="history-date">📅 ${item.fecha}</div>
+                        <div class="history-reason">${item.razon}</div>
+                    </div>
+                `).join('');
+            }
+
+            const resultHTML = `
+                <div class="risk-badge ${riesgoBadge}">${riesgoTexto}</div>
+
+                <div class="client-info">
+                    <h3>${cliente.nombre}</h3>
+                    <div class="info-row">
+                        <span class="info-label">Teléfono:</span>
+                        <span>${cliente.telefono}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Intentos fallidos:</span>
+                        <span>${cliente.intentos_totales}</span>
+                    </div>
+                </div>
+
+                <div class="history-section">
+                    <h3>📋 Historial de Intentos</h3>
+                    ${historialHTML || '<p style="color: #999;">No hay historial disponible</p>'}
+                </div>
+
+                <div class="analysis-section">
+                    <h3>📊 Análisis</h3>
+                    <div class="analysis-row">
+                        <div class="analysis-item">
+                            <div class="analysis-label">Zona</div>
+                            <div class="analysis-value">${cliente.zona || 'N/A'}</div>
+                        </div>
+                        <div class="analysis-item">
+                            <div class="analysis-label">Monto promedio</div>
+                            <div class="analysis-value">$${cliente.monto_promedio || '0'}</div>
+                        </div>
+                        <div class="analysis-item">
+                            <div class="analysis-label">Causa frecuente</div>
+                            <div class="analysis-value" style="font-size: 0.8em;">${cliente.causa_frecuente || 'N/A'}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn-action btn-cancelar" onclick="cancelarEnvio()">
+                        ❌ NO ENVIAR - Cancelar Pedido
+                    </button>
+                    <button class="btn-action btn-enviar" onclick="enviarDeTodas()">
+                        ✅ ENVIAR DE TODAS FORMAS
+                    </button>
+                </div>
+
+                <div style="background: #fff3e0; padding: 15px; border-radius: 8px; border-left: 4px solid #ff9800;">
+                    <strong>💡 Recomendación:</strong> Este cliente tiene ${cliente.intentos_totales} intentos fallidos. 
+                    La probabilidad de entrega es baja. Considera contactarlo primero para validar la dirección.
+                </div>
+            `;
+
+            const resultSection = document.getElementById('resultSection');
+            resultSection.innerHTML = resultHTML;
+            resultSection.classList.add('active');
+            document.getElementById('emptyState').style.display = 'none';
+        }
+
+        // ============================================
+        // MOSTRAR RESULTADO OK (Sin riesgo)
+        // ============================================
+        function mostrarResultadoOK(telefono) {
+            const resultHTML = `
+                <div class="risk-badge risk-bajo">✅ BAJO RIESGO</div>
+
+                <div class="client-info">
+                    <h3>Cliente Desconocido</h3>
+                    <div class="info-row">
+                        <span class="info-label">Teléfono:</span>
+                        <span>${telefono}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Estado:</span>
+                        <span>No tiene historial de no entrega</span>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn-action btn-enviar" onclick="enviarOK()" style="grid-column: 1 / -1;">
+                        ✅ OK ENVIAR - Proceder con el pedido
+                    </button>
+                </div>
+
+                <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; border-left: 4px solid #4caf50;">
+                    <strong>✨ Buen cliente:</strong> Este teléfono no aparece en la base de datos de no entregados. 
+                    Es seguro proceder con el envío.
+                </div>
+            `;
+
+            const resultSection = document.getElementById('resultSection');
+            resultSection.innerHTML = resultHTML;
+            resultSection.classList.add('active');
+            document.getElementById('emptyState').style.display = 'none';
+        }
+
+        // ============================================
+        // ACCIONES DE BOTONES
+        // ============================================
+        function cancelarEnvio() {
+            alert('✅ Pedido cancelado correctamente. El cliente NO será enviado.');
+            limpiarBusqueda();
+        }
+
+        function enviarDeTodas() {
+            alert('⚠️ Pedido enviado de todas formas. Se registró manualmente.');
+            limpiarBusqueda();
+        }
+
+        function enviarOK() {
+            alert('✅ Pedido enviado correctamente. Buen cliente.');
+            limpiarBusqueda();
+        }
+
+        // ============================================
+        // HISTORIAL DE BÚSQUEDAS
+        // ============================================
+        function agregarAlHistorial(telefono, resultado) {
+            const ahora = new Date().toLocaleTimeString('es-SV');
+            historialBusquedas.unshift({ telefono, resultado, hora: ahora });
+            // Mantener solo últimas 10 búsquedas
+            historialBusquedas = historialBusquedas.slice(0, 10);
+            localStorage.setItem('historialBusquedas', JSON.stringify(historialBusquedas));
+        }
+
+        // ============================================
+        // FUNCIONES AUXILIARES
+        // ============================================
+        function mostrarLoading(show) {
+            document.getElementById('loading').classList.toggle('active', show);
+        }
+
+        function limpiarBusqueda() {
+            document.getElementById('telefonoBusqueda').value = '';
+            document.getElementById('telefonoBusqueda').focus();
+            document.getElementById('resultSection').classList.remove('active');
+            document.getElementById('emptyState').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
