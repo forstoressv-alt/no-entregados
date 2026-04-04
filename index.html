@@ -166,6 +166,39 @@
             margin-top: 8px;
         }
         
+        .progress-container {
+            display: none;
+            margin-bottom: 20px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+            animation: shimmer 1.5s infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .progress-text {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+        
         .upload-btn {
             width: 100%;
             padding: 12px;
@@ -278,6 +311,12 @@
         .result-header h3 {
             color: #333;
             font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .result-header h4 {
+            color: #333;
+            font-size: 16px;
             margin-bottom: 10px;
         }
         
@@ -434,7 +473,7 @@
         </div>
         
         <div class="header">
-            <h1>🔍 Verificador No Entregados</h1>
+            <h1>🔍 Verificador No Entregados En El Salvador</h1>
             <p>Verifica antes de enviar</p>
         </div>
         
@@ -477,7 +516,16 @@
                         <div class="file-info">Cada número en una línea nueva</div>
                     </label>
                 </div>
-                <button class="upload-btn" onclick="processFile()">
+                
+                <!-- BARRA DE PROGRESO -->
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">Procesando...</div>
+                </div>
+                
+                <button class="upload-btn" id="uploadBtn" onclick="processFile()">
                     🚀 Verificar Números
                 </button>
             </div>
@@ -605,7 +653,7 @@
             resultsDiv.innerHTML = html;
         });
         
-        // PROCESAR ARCHIVO
+        // PROCESAR ARCHIVO CON BARRA DE PROGRESO
         function processFile() {
             const fileInput = document.getElementById('fileInput');
             const file = fileInput.files[0];
@@ -615,13 +663,30 @@
                 return;
             }
             
+            // Mostrar barra de progreso
+            const progressContainer = document.getElementById('progressContainer');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const uploadBtn = document.getElementById('uploadBtn');
+            
+            progressContainer.style.display = 'block';
+            uploadBtn.disabled = true;
+            progressFill.style.width = '10%';
+            progressText.textContent = 'Leyendo archivo...';
+            
             const reader = new FileReader();
             reader.onload = (e) => {
+                progressFill.style.width = '30%';
+                progressText.textContent = 'Extrayendo números...';
+                
                 const content = e.target.result;
                 const phonesFromFile = content
                     .split('\n')
                     .map(line => line.trim().replace(/[^\d]/g, ''))
                     .filter(phone => phone.length >= 7);
+                
+                progressFill.style.width = '50%';
+                progressText.textContent = 'Comparando con base de datos...';
                 
                 // Procesar matches
                 const resultados = {
@@ -633,7 +698,7 @@
                     matches: []
                 };
                 
-                phonesFromFile.forEach(phone => {
+                phonesFromFile.forEach((phone, index) => {
                     const matches = allData.filter(item => item.telefono === phone);
                     
                     if (matches.length === 0) {
@@ -653,7 +718,21 @@
                             riesgo: matches.length >= 2 ? 'alto' : 'medio'
                         });
                     }
+                    
+                    // Actualizar progreso
+                    const progreso = 50 + (index / phonesFromFile.length) * 50;
+                    progressFill.style.width = progreso + '%';
                 });
+                
+                progressFill.style.width = '100%';
+                progressText.textContent = '✓ Verificación completada';
+                
+                // Ocultar barra después de 1.5 segundos
+                setTimeout(() => {
+                    progressContainer.style.display = 'none';
+                    uploadBtn.disabled = false;
+                    progressFill.style.width = '0%';
+                }, 1500);
                 
                 // Mostrar resultados
                 let html = `
