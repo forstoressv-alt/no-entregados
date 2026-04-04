@@ -59,6 +59,42 @@
             font-size: 14px;
         }
         
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .tab-btn {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            color: #999;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        
+        .tab-btn:hover {
+            color: #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
         .search-section {
             margin-bottom: 30px;
         }
@@ -89,6 +125,69 @@
             font-weight: bold;
         }
         
+        .upload-section {
+            margin-bottom: 30px;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-input-wrapper input[type="file"] {
+            display: none;
+        }
+        
+        .file-label {
+            display: block;
+            padding: 15px;
+            background: #f0f4ff;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-label:hover {
+            background: #e8f0ff;
+            border-color: #764ba2;
+        }
+        
+        .file-label span {
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .file-info {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+        }
+        
+        .upload-btn {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+        
+        .upload-btn:hover {
+            background: #764ba2;
+        }
+        
+        .upload-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
         .results {
             min-height: 200px;
             max-height: 600px;
@@ -102,9 +201,6 @@
             font-size: 16px;
         }
         
-        /* RIESGO BAJO - 0 intentos (no mostrado) */
-        
-        /* RIESGO MEDIO - 1 intento */
         .risk-medium {
             background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
             border: 3px solid #ffc107;
@@ -133,7 +229,6 @@
             margin-bottom: 10px;
         }
         
-        /* RIESGO ALTO - 2+ intentos */
         .risk-high {
             background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
             border: 3px solid #dc3545;
@@ -254,6 +349,61 @@
             background: #ff9800;
         }
         
+        .summary-stats {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .stat-value {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .stat-value.danger {
+            color: #dc3545;
+        }
+        
+        .stat-value.warning {
+            color: #ffc107;
+        }
+        
+        .download-btn {
+            width: 100%;
+            padding: 12px;
+            background: #51cf66;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+        
+        .download-btn:hover {
+            background: #40c057;
+        }
+        
         .footer {
             text-align: center;
             margin-top: 30px;
@@ -279,30 +429,62 @@
 </head>
 <body>
     <div class="container">
-        <!-- LOGO DE TU APP -->
         <div class="logo">
             <img src="https://forstoressv-alt.github.io/no-entregados/logo.png" alt="FORSTORE Logo" onerror="this.style.display='none'">
         </div>
         
         <div class="header">
-            <h1>🔍 Verificador No Entregados En El Salvador</h1>
+            <h1>🔍 Verificador No Entregados</h1>
             <p>Verifica antes de enviar</p>
         </div>
         
-        <div class="search-section">
-            <div class="search-box">
-                <input 
-                    type="text" 
-                    id="searchPhone" 
-                    placeholder="Ingresa teléfono (ej: 76340225)"
-                    autocomplete="off"
-                >
-            </div>
-            <div class="status" id="status">Cargando datos...</div>
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('individual')">
+                🔎 Búsqueda Individual
+            </button>
+            <button class="tab-btn" onclick="switchTab('batch')">
+                📤 Verificar Lote
+            </button>
         </div>
         
-        <div class="results" id="results">
-            <div class="no-results">Ingresa un teléfono para buscar</div>
+        <!-- TAB 1: BÚSQUEDA INDIVIDUAL -->
+        <div id="individual" class="tab-content active">
+            <div class="search-section">
+                <div class="search-box">
+                    <input 
+                        type="text" 
+                        id="searchPhone" 
+                        placeholder="Ingresa teléfono (ej: 76340225)"
+                        autocomplete="off"
+                    >
+                </div>
+                <div class="status" id="status">Cargando datos...</div>
+            </div>
+            
+            <div class="results" id="results">
+                <div class="no-results">Ingresa un teléfono para buscar</div>
+            </div>
+        </div>
+        
+        <!-- TAB 2: VERIFICAR LOTE -->
+        <div id="batch" class="tab-content">
+            <div class="upload-section">
+                <div class="file-input-wrapper">
+                    <input type="file" id="fileInput" accept=".txt,.csv">
+                    <label for="fileInput" class="file-label">
+                        <span>📁 Sube un archivo (TXT o CSV)</span>
+                        <div class="file-info">Cada número en una línea nueva</div>
+                    </label>
+                </div>
+                <button class="upload-btn" onclick="processFile()">
+                    🚀 Verificar Números
+                </button>
+            </div>
+            
+            <div class="results" id="batchResults">
+                <div class="no-results">Sube un archivo para comenzar</div>
+            </div>
         </div>
         
         <div class="footer">
@@ -313,7 +495,6 @@
 
     <script>
         let allData = [];
-        
         const SHEET_ID = "1wWj1Cww4siCIj1aLDZj4teZfvxfAayY6ZnKXuhM_Ri8"; // Reemplaza aquí
         
         async function loadData() {
@@ -346,6 +527,16 @@
             }
         }
         
+        // CAMBIAR TABS
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tab).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // BÚSQUEDA INDIVIDUAL
         document.getElementById('searchPhone').addEventListener('keyup', (e) => {
             const query = e.target.value.trim();
             const resultsDiv = document.getElementById('results');
@@ -363,7 +554,6 @@
                         <div style="font-size: 48px; margin-bottom: 15px;">✅</div>
                         <h3 style="color: #51cf66; font-size: 20px; margin-bottom: 10px;">Cliente Seguro</h3>
                         <p style="color: #666;">No está en lista negra</p>
-                        <p style="color: #999; font-size: 12px; margin-top: 10px;">Puedes proceder con el envío</p>
                     </div>
                 `;
                 return;
@@ -373,7 +563,6 @@
             const sorted = matches.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
             const cliente = matches[0];
             
-            // RIESGO MEDIO - 1 intento
             let riskHTML = '';
             if (frecuencia === 1) {
                 riskHTML = `
@@ -381,18 +570,14 @@
                         <div class="icon">⚠️</div>
                         <h2>RIESGO MEDIO</h2>
                         <p>1 intento fallido anterior</p>
-                        <p style="font-size: 12px; margin: 10px 0;">Verifica domicilio antes de enviar</p>
                     </div>
                 `;
-            }
-            // RIESGO ALTO - 2+ intentos
-            else if (frecuencia >= 2) {
+            } else if (frecuencia >= 2) {
                 riskHTML = `
                     <div class="risk-high">
                         <div class="icon">🚨</div>
                         <h2>RIESGO ALTO</h2>
                         <p>${frecuencia} intentos fallidos</p>
-                        <p style="font-size: 12px; margin: 10px 0; color: #721c24;">⛔ NO RECOMENDADO - Verifica con cliente primero</p>
                     </div>
                 `;
             }
@@ -406,15 +591,12 @@
                         ${frecuencia} intento${frecuencia > 1 ? 's' : ''} fallido${frecuencia > 1 ? 's' : ''}
                     </div>
                 </div>
-                
                 <div class="attempts">
-                    <h4>📋 Historial de entregas fallidas:</h4>
+                    <h4>📋 Historial:</h4>
                     ${sorted.map((item, i) => `
                         <div class="attempt-item">
                             <span class="date">#${i + 1}</span> 📅 ${item.fecha}
-                            <span class="store ${item.tienda === 'Forstore' ? '' : 'voladoz'}">
-                                🏢 ${item.tienda}
-                            </span>
+                            <span class="store ${item.tienda === 'Forstore' ? '' : 'voladoz'}">🏢 ${item.tienda}</span>
                         </div>
                     `).join('')}
                 </div>
@@ -423,6 +605,129 @@
             resultsDiv.innerHTML = html;
         });
         
+        // PROCESAR ARCHIVO
+        function processFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Por favor sube un archivo');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const content = e.target.result;
+                const phonesFromFile = content
+                    .split('\n')
+                    .map(line => line.trim().replace(/[^\d]/g, ''))
+                    .filter(phone => phone.length >= 7);
+                
+                // Procesar matches
+                const resultados = {
+                    total: phonesFromFile.length,
+                    encontrados: 0,
+                    noEncontrados: 0,
+                    riesgoAlto: 0,
+                    riesgoMedio: 0,
+                    matches: []
+                };
+                
+                phonesFromFile.forEach(phone => {
+                    const matches = allData.filter(item => item.telefono === phone);
+                    
+                    if (matches.length === 0) {
+                        resultados.noEncontrados++;
+                    } else {
+                        resultados.encontrados++;
+                        if (matches.length >= 2) {
+                            resultados.riesgoAlto++;
+                        } else {
+                            resultados.riesgoMedio++;
+                        }
+                        resultados.matches.push({
+                            telefono: phone,
+                            nombre: matches[0].nombre,
+                            tienda: matches[0].tienda,
+                            intentos: matches.length,
+                            riesgo: matches.length >= 2 ? 'alto' : 'medio'
+                        });
+                    }
+                });
+                
+                // Mostrar resultados
+                let html = `
+                    <div class="summary-stats">
+                        <h3 style="margin-bottom: 15px; color: #333;">📊 Resumen de Verificación</h3>
+                        <div class="stat-row">
+                            <span class="stat-label">Total números procesados:</span>
+                            <span class="stat-value">${resultados.total}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Encontrados en lista negra:</span>
+                            <span class="stat-value danger">${resultados.encontrados}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">No encontrados (seguros):</span>
+                            <span class="stat-value" style="color: #51cf66;">${resultados.noEncontrados}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Riesgo Alto:</span>
+                            <span class="stat-value danger">${resultados.riesgoAlto}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Riesgo Medio:</span>
+                            <span class="stat-value warning">${resultados.riesgoMedio}</span>
+                        </div>
+                    </div>
+                    
+                    <h3 style="color: #333; margin-bottom: 15px; margin-top: 20px;">⚠️ Números en Lista Negra:</h3>
+                `;
+                
+                if (resultados.matches.length === 0) {
+                    html += '<div class="no-results">✅ Todos los números son seguros</div>';
+                } else {
+                    html += resultados.matches.map(match => `
+                        <div class="result-header">
+                            <h4>👤 ${match.nombre}</h4>
+                            <p><strong>☎️:</strong> ${match.telefono}</p>
+                            <p><strong>🏪:</strong> ${match.tienda}</p>
+                            <div class="frequency-badge ${match.riesgo === 'alto' ? 'high' : 'medium'}">
+                                ${match.intentos} intento${match.intentos > 1 ? 's' : ''} fallido${match.intentos > 1 ? 's' : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    html += `
+                        <button class="download-btn" onclick="descargarResultados(${JSON.stringify(resultados).replace(/"/g, '&quot;')})">
+                            📥 Descargar Resultados (CSV)
+                        </button>
+                    `;
+                }
+                
+                document.getElementById('batchResults').innerHTML = html;
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        // DESCARGAR RESULTADOS
+        function descargarResultados(resultados) {
+            let csv = 'Teléfono,Nombre,Tienda,Intentos Fallidos,Riesgo\n';
+            
+            resultados.matches.forEach(m => {
+                csv += `${m.telefono},${m.nombre},${m.tienda},${m.intentos},${m.riesgo.toUpperCase()}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `verificacion-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+        
+        // Cargar datos al iniciar
         loadData();
     </script>
 </body>
