@@ -272,47 +272,47 @@
         let allData = [];
         
         // ===== CONFIGURA AQUÍ =====
-        const SHEET_ID = 1wWj1Cww4siCIj1aLDZj4teZfvxfAayY6ZnKXuhM_Ri8; // Reemplaza con tu Sheet ID
-        const API_KEY = AIzaSyA0F2SzYBsA6XkfyVobjwvLyRiJdlHPeF0; // Reemplaza con tu API Key
+        const SHEET_ID = "1wWj1Cww4siCIj1aLDZj4teZfvxfAayY6ZnKXuhM_Ri8"; // Reemplaza con tu Sheet ID
         // =========================
-        
-        const SHEET_NAME = "shipments_detalle";
         
         async function loadDataFromSheets() {
             try {
-                const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
+                // Usar CSV export en lugar de API (evita problemas de CORS)
+                const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
+                
                 const response = await fetch(url);
+                if (!response.ok) throw new Error('No se pudo cargar la hoja');
                 
-                if (!response.ok) {
-                    throw new Error(`Error ${response.status}: Verifica tu Sheet ID y API Key`);
-                }
+                const csv = await response.text();
+                const lines = csv.split('\n').slice(1); // Ignorar header
                 
-                const data = await response.json();
+                allData = lines
+                    .filter(line => line.trim())
+                    .map(line => {
+                        const parts = line.split(',');
+                        return {
+                            telefono: parts[0]?.trim().replace(/"/g, '') || '',
+                            nombre: parts[1]?.trim().replace(/"/g, '') || '',
+                            fecha: parts[2]?.trim().replace(/"/g, '') || '',
+                            tienda: parts[3]?.trim().replace(/"/g, '') || '',
+                            id_unico: parts[4]?.trim().replace(/"/g, '') || ''
+                        };
+                    })
+                    .filter(item => item.telefono);
                 
-                if (data.values && data.values.length > 1) {
-                    allData = data.values.slice(1).map(row => ({
-                        telefono: row[0] || '',
-                        nombre: row[1] || '',
-                        fecha: row[2] || '',
-                        tienda: row[3] || '',
-                        id_unico: row[4] || ''
-                    })).filter(item => item.telefono); // Filtrar vacíos
-                    
-                    document.getElementById('lastUpdate').textContent = new Date().toLocaleString('es-SV');
-                    document.getElementById('totalRecords').textContent = allData.length;
-                    document.getElementById('status').textContent = `✓ Listo - ${allData.length} registros cargados`;
-                    document.getElementById('status').className = 'status ready';
-                    
-                    console.log(`✓ Cargados ${allData.length} registros`);
-                } else {
-                    throw new Error('No se encontraron datos en la hoja');
-                }
+                document.getElementById('lastUpdate').textContent = new Date().toLocaleString('es-SV');
+                document.getElementById('totalRecords').textContent = allData.length;
+                document.getElementById('status').textContent = `✓ Listo - ${allData.length} registros cargados`;
+                document.getElementById('status').className = 'status ready';
+                
+                console.log(`✓ Cargados ${allData.length} registros`);
+                
             } catch (error) {
                 console.error('Error:', error);
                 document.getElementById('status').textContent = '✗ Error al cargar datos';
                 document.getElementById('status').className = 'status';
                 document.getElementById('results').innerHTML = 
-                    '<div class="no-results">⚠️ Error: ' + error.message + '</div>';
+                    '<div class="no-results">⚠️ Error: ' + error.message + '<br><small>Verifica tu Sheet ID</small></div>';
             }
         }
         
