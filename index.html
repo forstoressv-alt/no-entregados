@@ -30,6 +30,17 @@
             padding: 40px;
         }
         
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo img {
+            max-width: 120px;
+            height: auto;
+            border-radius: 8px;
+        }
+        
         .header {
             text-align: center;
             margin-bottom: 30px;
@@ -52,11 +63,6 @@
             margin-bottom: 30px;
         }
         
-        .search-box {
-            position: relative;
-            margin-bottom: 15px;
-        }
-        
         .search-box input {
             width: 100%;
             padding: 15px;
@@ -72,19 +78,10 @@
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
         
-        .search-box input::placeholder {
-            color: #999;
-        }
-        
         .status {
             font-size: 12px;
             color: #999;
             margin-top: 8px;
-        }
-        
-        .status.loading {
-            color: #667eea;
-            font-weight: bold;
         }
         
         .status.ready {
@@ -105,6 +102,76 @@
             font-size: 16px;
         }
         
+        /* RIESGO BAJO - 0 intentos (no mostrado) */
+        
+        /* RIESGO MEDIO - 1 intento */
+        .risk-medium {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
+            border: 3px solid #ffc107;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .risk-medium .icon {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .risk-medium h2 {
+            color: #856404;
+            font-size: 24px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .risk-medium p {
+            color: #856404;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        /* RIESGO ALTO - 2+ intentos */
+        .risk-high {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border: 3px solid #dc3545;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        .risk-high .icon {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .risk-high h2 {
+            color: #721c24;
+            font-size: 24px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .risk-high p {
+            color: #721c24;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+        }
+        
         .result-header {
             background: #f9f9f9;
             padding: 20px;
@@ -113,15 +180,15 @@
             border-left: 5px solid #667eea;
         }
         
-        .result-header h2 {
+        .result-header h3 {
             color: #333;
-            font-size: 20px;
+            font-size: 18px;
             margin-bottom: 10px;
         }
         
         .result-header p {
             color: #666;
-            margin: 5px 0;
+            margin: 8px 0;
             font-size: 14px;
         }
         
@@ -129,28 +196,30 @@
             display: inline-block;
             background: #667eea;
             color: white;
-            padding: 8px 16px;
+            padding: 10px 20px;
             border-radius: 20px;
             font-weight: bold;
             font-size: 16px;
             margin-top: 10px;
         }
         
-        .frequency-badge.high {
-            background: #ff6b6b;
+        .frequency-badge.medium {
+            background: #ffc107;
+            color: #856404;
         }
         
-        .frequency-badge.medium {
-            background: #ffa94d;
+        .frequency-badge.high {
+            background: #dc3545;
+            color: white;
         }
         
         .attempts {
             margin-top: 20px;
         }
         
-        .attempts h3 {
+        .attempts h4 {
             color: #333;
-            font-size: 16px;
+            font-size: 14px;
             margin-bottom: 15px;
             padding-bottom: 10px;
             border-bottom: 2px solid #e0e0e0;
@@ -185,17 +254,6 @@
             background: #ff9800;
         }
         
-        .warning {
-            background: #fff5f5;
-            border: 2px solid #ff6b6b;
-            color: #c92a2a;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: bold;
-        }
-        
         .footer {
             text-align: center;
             margin-top: 30px;
@@ -205,45 +263,30 @@
             font-size: 12px;
         }
         
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
         ::-webkit-scrollbar {
             width: 8px;
         }
         
         ::-webkit-scrollbar-track {
             background: #f1f1f1;
-            border-radius: 10px;
         }
         
         ::-webkit-scrollbar-thumb {
             background: #667eea;
             border-radius: 10px;
         }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #764ba2;
-        }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- LOGO DE TU APP -->
+        <div class="logo">
+            <img src="https://forstoressv-alt.github.io/no-entregados/logo.png" alt="FORSTORE Logo" onerror="this.style.display='none'">
+        </div>
+        
         <div class="header">
             <h1>🔍 Verificador No Entregados</h1>
-            <p>FORSTORE - Busca un teléfono para ver historial de entregas fallidas</p>
+            <p>FORSTORE - Verifica antes de enviar</p>
         </div>
         
         <div class="search-section">
@@ -263,7 +306,7 @@
         </div>
         
         <div class="footer">
-            <p>Datos actualizados: <span id="lastUpdate">-</span></p>
+            <p>Actualizado: <span id="lastUpdate">-</span></p>
             <p>Total registros: <span id="totalRecords">-</span></p>
         </div>
     </div>
@@ -271,20 +314,14 @@
     <script>
         let allData = [];
         
-        // ===== CONFIGURA AQUÍ =====
-        const SHEET_ID = "1wWj1Cww4siCIj1aLDZj4teZfvxfAayY6ZnKXuhM_Ri8"; // Reemplaza con tu Sheet ID
-        // =========================
+        const SHEET_ID = "1wWj1Cww4siCIj1aLDZj4teZfvxfAayY6ZnKXuhM_Ri8"; // Reemplaza aquí
         
-        async function loadDataFromSheets() {
+        async function loadData() {
             try {
-                // Usar CSV export en lugar de API (evita problemas de CORS)
                 const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
-                
                 const response = await fetch(url);
-                if (!response.ok) throw new Error('No se pudo cargar la hoja');
-                
                 const csv = await response.text();
-                const lines = csv.split('\n').slice(1); // Ignorar header
+                const lines = csv.split('\n').slice(1);
                 
                 allData = lines
                     .filter(line => line.trim())
@@ -294,25 +331,18 @@
                             telefono: parts[0]?.trim().replace(/"/g, '') || '',
                             nombre: parts[1]?.trim().replace(/"/g, '') || '',
                             fecha: parts[2]?.trim().replace(/"/g, '') || '',
-                            tienda: parts[3]?.trim().replace(/"/g, '') || '',
-                            id_unico: parts[4]?.trim().replace(/"/g, '') || ''
+                            tienda: parts[3]?.trim().replace(/"/g, '') || ''
                         };
                     })
                     .filter(item => item.telefono);
                 
                 document.getElementById('lastUpdate').textContent = new Date().toLocaleString('es-SV');
                 document.getElementById('totalRecords').textContent = allData.length;
-                document.getElementById('status').textContent = `✓ Listo - ${allData.length} registros cargados`;
+                document.getElementById('status').textContent = `✓ Listo - ${allData.length} registros`;
                 document.getElementById('status').className = 'status ready';
                 
-                console.log(`✓ Cargados ${allData.length} registros`);
-                
             } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('status').textContent = '✗ Error al cargar datos';
-                document.getElementById('status').className = 'status';
-                document.getElementById('results').innerHTML = 
-                    '<div class="no-results">⚠️ Error: ' + error.message + '<br><small>Verifica tu Sheet ID</small></div>';
+                document.getElementById('status').textContent = '✗ Error';
             }
         }
         
@@ -325,50 +355,65 @@
                 return;
             }
             
-            // Buscar coincidencias exactas
             const matches = allData.filter(item => item.telefono === query);
             
             if (matches.length === 0) {
-                resultsDiv.innerHTML = `<div class="no-results">✓ No encontrado en lista negra<br><small>Puedes proceder con el envío</small></div>`;
+                resultsDiv.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <div style="font-size: 48px; margin-bottom: 15px;">✅</div>
+                        <h3 style="color: #51cf66; font-size: 20px; margin-bottom: 10px;">Cliente Seguro</h3>
+                        <p style="color: #666;">No está en lista negra</p>
+                        <p style="color: #999; font-size: 12px; margin-top: 10px;">Puedes proceder con el envío</p>
+                    </div>
+                `;
                 return;
             }
             
-            // Agrupar por cliente (por nombre)
-            const clienteInfo = matches[0];
             const frecuencia = matches.length;
+            const sorted = matches.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+            const cliente = matches[0];
             
-            // Determinar color de alerta
-            let badgeClass = '';
-            let warning = '';
-            if (frecuencia >= 3) {
-                badgeClass = 'high';
-                warning = '<div class="warning">⚠️ CLIENTE DE ALTO RIESGO - MÚLTIPLES INTENTOS FALLIDOS</div>';
-            } else if (frecuencia >= 2) {
-                badgeClass = 'medium';
-                warning = '<div class="warning">⚠️ CLIENTE CON HISTORIAL - VERIFICAR ANTES DE ENVIAR</div>';
+            // RIESGO MEDIO - 1 intento
+            let riskHTML = '';
+            if (frecuencia === 1) {
+                riskHTML = `
+                    <div class="risk-medium">
+                        <div class="icon">⚠️</div>
+                        <h2>RIESGO MEDIO</h2>
+                        <p>1 intento fallido anterior</p>
+                        <p style="font-size: 12px; margin: 10px 0;">Verifica domicilio antes de enviar</p>
+                    </div>
+                `;
+            }
+            // RIESGO ALTO - 2+ intentos
+            else if (frecuencia >= 2) {
+                riskHTML = `
+                    <div class="risk-high">
+                        <div class="icon">🚨</div>
+                        <h2>RIESGO ALTO</h2>
+                        <p>${frecuencia} intentos fallidos</p>
+                        <p style="font-size: 12px; margin: 10px 0; color: #721c24;">⛔ NO RECOMENDADO - Verifica con cliente primero</p>
+                    </div>
+                `;
             }
             
-            // Ordenar intentos por fecha (más recientes primero)
-            const intentosOrdenados = matches
-                .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-            
-            let html = warning + `
+            let html = riskHTML + `
                 <div class="result-header">
-                    <h2>${clienteInfo.nombre}</h2>
-                    <p><strong>Teléfono:</strong> ${clienteInfo.telefono}</p>
-                    <p><strong>Tienda:</strong> ${clienteInfo.tienda}</p>
-                    <div class="frequency-badge ${badgeClass}">
+                    <h3>👤 ${cliente.nombre}</h3>
+                    <p><strong>☎️ Teléfono:</strong> ${cliente.telefono}</p>
+                    <p><strong>🏪 Tienda:</strong> ${cliente.tienda}</p>
+                    <div class="frequency-badge ${frecuencia === 1 ? 'medium' : 'high'}">
                         ${frecuencia} intento${frecuencia > 1 ? 's' : ''} fallido${frecuencia > 1 ? 's' : ''}
                     </div>
                 </div>
                 
                 <div class="attempts">
-                    <h3>Historial de entregas fallidas:</h3>
-                    ${intentosOrdenados.map((item, index) => `
+                    <h4>📋 Historial de entregas fallidas:</h4>
+                    ${sorted.map((item, i) => `
                         <div class="attempt-item">
-                            <span class="date">#${index + 1}</span> ${item.fecha}
+                            <span class="date">#${i + 1}</span> 📅 ${item.fecha}
                             <span class="store ${item.tienda === 'Forstore' ? '' : 'voladoz'}">
-                                ${item.tienda}
+                                🏢 ${item.tienda}
                             </span>
                         </div>
                     `).join('')}
@@ -378,8 +423,7 @@
             resultsDiv.innerHTML = html;
         });
         
-        // Cargar datos al iniciar
-        loadDataFromSheets();
+        loadData();
     </script>
 </body>
 </html>
