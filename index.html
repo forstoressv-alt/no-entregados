@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verificador No Entregados</title>
+    <title>Verificador No Entregados Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -15,48 +16,38 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
         }
         
         .container {
             background: white;
-            border-radius: 12px;
+            border-radius: 16px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 700px;
-            padding: 40px;
-        }
-        
-        .logo {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .logo img {
-            max-width: 120px;
-            height: auto;
-            border-radius: 8px;
+            max-width: 1200px;
+            margin: 0 auto;
+            overflow: hidden;
         }
         
         .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 30px;
+            color: white;
             text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 20px;
         }
         
         .header h1 {
-            color: #333;
-            font-size: 32px;
+            font-size: 36px;
             margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
         
         .header p {
-            color: #666;
             font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
         }
         
         .tabs {
@@ -64,18 +55,20 @@
             gap: 10px;
             margin-bottom: 30px;
             border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
         }
         
         .tab-btn {
-            padding: 12px 20px;
+            padding: 12px 24px;
             background: none;
             border: none;
             cursor: pointer;
             font-size: 14px;
-            font-weight: bold;
+            font-weight: 600;
             color: #999;
             border-bottom: 3px solid transparent;
             transition: all 0.3s;
+            position: relative;
         }
         
         .tab-btn.active {
@@ -93,10 +86,101 @@
         
         .tab-content.active {
             display: block;
+            animation: fadeIn 0.3s ease;
         }
         
-        .search-section {
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* TAB 1: BÚSQUEDA INDIVIDUAL */
+        .search-filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
             margin-bottom: 30px;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .filter-group label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        
+        .filter-group input,
+        .filter-group select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .btn-success {
+            background: #51cf66;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #40c057;
+        }
+        
+        .search-box {
+            margin-bottom: 20px;
         }
         
         .search-box input {
@@ -114,61 +198,264 @@
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
         
-        .status {
-            font-size: 12px;
-            color: #999;
-            margin-top: 8px;
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
         }
         
-        .status.ready {
-            color: #51cf66;
+        .results-table thead {
+            background: #f0f4ff;
+        }
+        
+        .results-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #667eea;
+            border-bottom: 2px solid #e0e0e0;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .results-table th:hover {
+            background: #e8f0ff;
+        }
+        
+        .results-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .results-table tbody tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
             font-weight: bold;
         }
         
-        .upload-section {
+        .badge-low {
+            background: #e7f5ff;
+            color: #1971c2;
+        }
+        
+        .badge-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .badge-forstore {
+            background: #e7f5ff;
+            color: #667eea;
+        }
+        
+        .badge-voladoz {
+            background: #fff3cd;
+            color: #ff9800;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .no-results-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        /* TAB 2: ESTADÍSTICAS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
             margin-bottom: 30px;
         }
         
-        .file-input-wrapper {
-            position: relative;
-            display: inline-block;
-            width: 100%;
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+            text-align: center;
+            animation: slideUp 0.5s ease;
         }
         
-        .file-input-wrapper input[type="file"] {
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .stat-card.alt {
+            background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+        }
+        
+        .stat-card.danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+        
+        .stat-card.warning {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+        }
+        
+        .stat-number {
+            font-size: 42px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-container {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+        
+        /* TAB 3: VERIFICAR LOTE */
+        .upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s;
+            background: #f0f4ff;
+            margin-bottom: 20px;
+        }
+        
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: #e8f0ff;
+            transform: scale(1.02);
+        }
+        
+        .upload-area input[type="file"] {
             display: none;
         }
         
-        .file-label {
-            display: block;
-            padding: 15px;
-            background: #f0f4ff;
-            border: 2px dashed #667eea;
-            border-radius: 8px;
-            text-align: center;
+        .upload-label {
             cursor: pointer;
+            display: block;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .upload-info {
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .file-indicator {
+            display: none;
+            align-items: center;
+            gap: 15px;
+            background: #e7f5ff;
+            border: 2px solid #667eea;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            animation: slideDown 0.3s ease;
+        }
+        
+        .file-indicator.show {
+            display: flex;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .file-indicator-icon {
+            font-size: 24px;
+        }
+        
+        .file-indicator-text {
+            flex: 1;
+            text-align: left;
+        }
+        
+        .file-name {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 4px;
+        }
+        
+        .file-size {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .file-indicator-close {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 18px;
             transition: all 0.3s;
         }
         
-        .file-label:hover {
-            background: #e8f0ff;
-            border-color: #764ba2;
-        }
-        
-        .file-label span {
-            color: #667eea;
-            font-weight: bold;
-        }
-        
-        .file-info {
-            font-size: 12px;
-            color: #999;
-            margin-top: 8px;
+        .file-indicator-close:hover {
+            background: #764ba2;
+            transform: rotate(90deg);
         }
         
         .progress-container {
             display: none;
             margin-bottom: 20px;
+        }
+        
+        .progress-container.show {
+            display: block;
         }
         
         .progress-bar {
@@ -199,206 +486,22 @@
             text-align: center;
         }
         
-        .upload-btn {
-            width: 100%;
-            padding: 12px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: all 0.3s;
-        }
-        
-        .upload-btn:hover {
-            background: #764ba2;
-        }
-        
-        .upload-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        
-        .results {
-            min-height: 200px;
-            max-height: 600px;
-            overflow-y: auto;
-        }
-        
-        .no-results {
-            text-align: center;
-            color: #999;
-            padding: 60px 20px;
-            font-size: 16px;
-        }
-        
-        .risk-medium {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
-            border: 3px solid #ffc107;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        
-        .risk-medium .icon {
-            font-size: 48px;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-        
-        .risk-medium h2 {
-            color: #856404;
-            font-size: 24px;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        
-        .risk-medium p {
-            color: #856404;
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        
-        .risk-high {
-            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-            border: 3px solid #dc3545;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-        
-        .risk-high .icon {
-            font-size: 48px;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-        
-        .risk-high h2 {
-            color: #721c24;
-            font-size: 24px;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        
-        .risk-high p {
-            color: #721c24;
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.02);
-            }
-        }
-        
-        .result-header {
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 5px solid #667eea;
-        }
-        
-        .result-header h3 {
-            color: #333;
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-        
-        .result-header h4 {
-            color: #333;
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-        
-        .result-header p {
-            color: #666;
-            margin: 8px 0;
-            font-size: 14px;
-        }
-        
-        .frequency-badge {
-            display: inline-block;
-            background: #667eea;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-        
-        .frequency-badge.medium {
-            background: #ffc107;
-            color: #856404;
-        }
-        
-        .frequency-badge.high {
-            background: #dc3545;
-            color: white;
-        }
-        
-        .attempts {
-            margin-top: 20px;
-        }
-        
-        .attempts h4 {
-            color: #333;
-            font-size: 14px;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-        
-        .attempt-item {
-            background: #f9f9f9;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 6px;
-            border-left: 4px solid #667eea;
-            font-size: 14px;
-            color: #555;
-        }
-        
-        .attempt-item .date {
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .attempt-item .store {
-            display: inline-block;
-            margin-left: 10px;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            background: #667eea;
-            color: white;
-        }
-        
-        .attempt-item .store.voladoz {
-            background: #ff9800;
-        }
-        
         .summary-stats {
             background: #f0f4ff;
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 10px;
             margin-bottom: 20px;
+        }
+        
+        .summary-stats h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
         }
         
         .stat-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
             padding: 10px 0;
             border-bottom: 1px solid #e0e0e0;
         }
@@ -407,22 +510,24 @@
             border-bottom: none;
         }
         
-        .stat-label {
+        .stat-row-label {
             color: #666;
-            font-size: 14px;
         }
         
-        .stat-value {
-            color: #667eea;
+        .stat-row-value {
             font-weight: bold;
-            font-size: 18px;
+            color: #667eea;
         }
         
-        .stat-value.danger {
+        .stat-row-value.danger {
             color: #dc3545;
         }
         
-        .stat-value.warning {
+        .stat-row-value.success {
+            color: #51cf66;
+        }
+        
+        .stat-row-value.warning {
             color: #ffc107;
         }
         
@@ -441,19 +546,33 @@
         
         .download-btn:hover {
             background: #40c057;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(81, 207, 102, 0.4);
         }
         
         .footer {
             text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
+            padding: 30px;
+            background: #f9f9f9;
             border-top: 1px solid #e0e0e0;
             color: #999;
             font-size: 12px;
         }
         
+        .status {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+        }
+        
+        .status.ready {
+            color: #51cf66;
+            font-weight: bold;
+        }
+        
         ::-webkit-scrollbar {
             width: 8px;
+            height: 8px;
         }
         
         ::-webkit-scrollbar-track {
@@ -464,57 +583,187 @@
             background: #667eea;
             border-radius: 10px;
         }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                padding: 15px;
+            }
+            
+            .search-filters {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-table {
+                font-size: 12px;
+            }
+            
+            .results-table td,
+            .results-table th {
+                padding: 10px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo">
-            <img src="https://forstoressv-alt.github.io/no-entregados/logo.png" alt="FORSTORE Logo" onerror="this.style.display='none'">
-        </div>
-        
         <div class="header">
-            <h1>🔍 Verificador No Entregados En El Salvador</h1>
-            <p>Verifica antes de enviar</p>
+            <h1>🔍 Verificador No Entregados Pro</h1>
+            <p>FORSTORE - Sistema inteligente de riesgo de clientes</p>
         </div>
         
-        <!-- TABS -->
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('individual')">
-                🔎 Búsqueda Individual
-            </button>
-            <button class="tab-btn" onclick="switchTab('batch')">
-                📤 Verificar Lote
-            </button>
-        </div>
-        
-        <!-- TAB 1: BÚSQUEDA INDIVIDUAL -->
-        <div id="individual" class="tab-content active">
-            <div class="search-section">
-                <div class="search-box">
-                    <input 
-                        type="text" 
-                        id="searchPhone" 
-                        placeholder="Ingresa teléfono (ej: 76340225)"
-                        autocomplete="off"
-                    >
-                </div>
-                <div class="status" id="status">Cargando datos...</div>
+        <div class="content">
+            <!-- TABS -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('busqueda')">
+                    🔎 Búsqueda Avanzada
+                </button>
+                <button class="tab-btn" onclick="switchTab('estadisticas')">
+                    📊 Estadísticas
+                </button>
+                <button class="tab-btn" onclick="switchTab('lote')">
+                    📤 Verificar Lote
+                </button>
             </div>
             
-            <div class="results" id="results">
-                <div class="no-results">Ingresa un teléfono para buscar</div>
+            <!-- TAB 1: BÚSQUEDA AVANZADA -->
+            <div id="busqueda" class="tab-content active">
+                <div class="search-filters">
+                    <div class="filter-group">
+                        <label>🔍 Búsqueda</label>
+                        <input type="text" id="searchInput" placeholder="Teléfono o nombre">
+                    </div>
+                    <div class="filter-group">
+                        <label>📅 Desde</label>
+                        <input type="date" id="dateFrom">
+                    </div>
+                    <div class="filter-group">
+                        <label>📅 Hasta</label>
+                        <input type="date" id="dateTo">
+                    </div>
+                    <div class="filter-group">
+                        <label>⚠️ Riesgo</label>
+                        <select id="riskFilter">
+                            <option value="">Todos</option>
+                            <option value="bajo">Riesgo Bajo</option>
+                            <option value="medio">Riesgo Medio</option>
+                            <option value="alto">Riesgo Alto</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>🏪 Tienda</label>
+                        <select id="tiendaFilter">
+                            <option value="">Todas</option>
+                            <option value="Forstore">Forstore</option>
+                            <option value="Voladoz">Voladoz</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="filter-buttons">
+                    <button class="btn btn-primary" onclick="applyFilters()">🔍 Buscar</button>
+                    <button class="btn btn-secondary" onclick="clearFilters()">🔄 Limpiar</button>
+                    <button class="btn btn-success" onclick="exportTableResults()">📥 Exportar Resultados</button>
+                </div>
+                
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; color: #666;">
+                    <span id="resultCount">Resultados: 0</span> | <span id="dataStatus">Cargando datos...</span>
+                </div>
+                
+                <div style="overflow-x: auto;">
+                    <table class="results-table" id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable(0)">☎️ Teléfono</th>
+                                <th onclick="sortTable(1)">👤 Nombre</th>
+                                <th onclick="sortTable(2)">📅 Primer Intento</th>
+                                <th onclick="sortTable(3)">🏪 Tienda</th>
+                                <th onclick="sortTable(4)">#️⃣ Intentos</th>
+                                <th>⚠️ Riesgo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr><td colspan="6" class="no-results">Ingresa criterios de búsqueda</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
-        
-        <!-- TAB 2: VERIFICAR LOTE -->
-        <div id="batch" class="tab-content">
-            <div class="upload-section">
-                <div class="file-input-wrapper">
-                    <input type="file" id="fileInput" accept=".txt,.csv">
-                    <label for="fileInput" class="file-label">
-                        <span>📁 Sube un archivo (TXT o CSV)</span>
-                        <div class="file-info">Cada número en una línea nueva</div>
+            
+            <!-- TAB 2: ESTADÍSTICAS -->
+            <div id="estadisticas" class="tab-content">
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total en Lista Negra</div>
+                        <div class="stat-number" id="statTotal">0</div>
+                    </div>
+                    <div class="stat-card alt">
+                        <div class="stat-label">Clientes Únicos</div>
+                        <div class="stat-number" id="statUnique">0</div>
+                    </div>
+                    <div class="stat-card danger">
+                        <div class="stat-label">Riesgo Alto (4+)</div>
+                        <div class="stat-number" id="statHigh">0</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-label">Riesgo Medio (1-3)</div>
+                        <div class="stat-number" id="statMedium">0</div>
+                    </div>
+                </div>
+                
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <div class="chart-title">📊 Distribución por Riesgo</div>
+                        <div class="chart-wrapper">
+                            <canvas id="riskChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-title">🏪 Registros por Tienda</div>
+                        <div class="chart-wrapper">
+                            <canvas id="tiendaChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-title">📈 Intentos Fallidos (Top 10)</div>
+                        <div class="chart-wrapper">
+                            <canvas id="topChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- TAB 3: VERIFICAR LOTE -->
+            <div id="lote" class="tab-content">
+                <div class="upload-area" id="uploadArea">
+                    <label for="fileInput" class="upload-label">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">Arrastra o haz clic para subir</div>
+                        <div class="upload-info">Soporta TXT o CSV (un número por línea)</div>
                     </label>
+                    <input type="file" id="fileInput" accept=".txt,.csv">
+                </div>
+                
+                <!-- INDICADOR DE ARCHIVO SUBIDO -->
+                <div class="file-indicator" id="fileIndicator">
+                    <div class="file-indicator-icon">✅</div>
+                    <div class="file-indicator-text">
+                        <div class="file-name" id="fileName"></div>
+                        <div class="file-size" id="fileSize"></div>
+                    </div>
+                    <button class="file-indicator-close" onclick="clearFile()">×</button>
+                </div>
+                
+                <div class="filter-buttons">
+                    <button class="btn btn-primary" onclick="processFile()">🚀 Verificar Números</button>
                 </div>
                 
                 <!-- BARRA DE PROGRESO -->
@@ -525,26 +774,29 @@
                     <div class="progress-text" id="progressText">Procesando...</div>
                 </div>
                 
-                <button class="upload-btn" id="uploadBtn" onclick="processFile()">
-                    🚀 Verificar Números
-                </button>
-            </div>
-            
-            <div class="results" id="batchResults">
-                <div class="no-results">Sube un archivo para comenzar</div>
+                <div id="batchResults">
+                    <div class="no-results">
+                        <div class="no-results-icon">📤</div>
+                        <p>Sube un archivo para comenzar</p>
+                    </div>
+                </div>
             </div>
         </div>
         
         <div class="footer">
-            <p>Actualizado: <span id="lastUpdate">-</span></p>
-            <p>Total registros: <span id="totalRecords">-</span></p>
+            <p>📱 Actualizado: <span id="lastUpdate">-</span> | 📊 Total Registros: <span id="totalRecords">-</span></p>
+            <p style="margin-top: 10px; font-size: 11px;">Sistema inteligente de riesgo - FORSTORE</p>
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script>
         let allData = [];
+        let filteredData = [];
+        let charts = {};
         const SHEET_ID = "1wWj1Cww4siCIj1aLDZj4teZfvxfAayY6ZnKXuhM_Ri8"; // Reemplaza aquí
         
+        // CARGAR DATOS
         async function loadData() {
             try {
                 const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
@@ -565,13 +817,23 @@
                     })
                     .filter(item => item.telefono);
                 
+                // Calcular frecuencia
+                allData = allData.map(item => ({
+                    ...item,
+                    intentos: allData.filter(i => i.telefono === item.telefono).length,
+                    riesgo: allData.filter(i => i.telefono === item.telefono).length >= 4 ? 'alto' : 
+                           allData.filter(i => i.telefono === item.telefono).length >= 2 ? 'medio' : 'bajo'
+                }));
+                
                 document.getElementById('lastUpdate').textContent = new Date().toLocaleString('es-SV');
                 document.getElementById('totalRecords').textContent = allData.length;
-                document.getElementById('status').textContent = `✓ Listo - ${allData.length} registros`;
-                document.getElementById('status').className = 'status ready';
+                document.getElementById('dataStatus').textContent = `✓ ${allData.length} registros cargados`;
+                document.getElementById('dataStatus').parentElement.style.color = '#51cf66';
+                
+                updateStatistics();
                 
             } catch (error) {
-                document.getElementById('status').textContent = '✗ Error';
+                document.getElementById('dataStatus').textContent = '✗ Error al cargar datos';
             }
         }
         
@@ -582,95 +844,248 @@
             
             document.getElementById(tab).classList.add('active');
             event.target.classList.add('active');
+            
+            if (tab === 'estadisticas') {
+                setTimeout(() => updateCharts(), 300);
+            }
         }
         
-        // BÚSQUEDA INDIVIDUAL
-        document.getElementById('searchPhone').addEventListener('keyup', (e) => {
-            const query = e.target.value.trim();
-            const resultsDiv = document.getElementById('results');
+        // APLICAR FILTROS
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const riskFilter = document.getElementById('riskFilter').value;
+            const tiendaFilter = document.getElementById('tiendaFilter').value;
+            const dateFrom = new Date(document.getElementById('dateFrom').value);
+            const dateTo = new Date(document.getElementById('dateTo').value);
             
-            if (!query) {
-                resultsDiv.innerHTML = '<div class="no-results">Ingresa un teléfono para buscar</div>';
+            filteredData = allData.filter(item => {
+                const matchSearch = !search || item.telefono.includes(search) || item.nombre.toLowerCase().includes(search);
+                const matchRisk = !riskFilter || item.riesgo === riskFilter;
+                const matchTienda = !tiendaFilter || item.tienda === tiendaFilter;
+                const itemDate = new Date(item.fecha);
+                const matchDate = (!document.getElementById('dateFrom').value || itemDate >= dateFrom) &&
+                                 (!document.getElementById('dateTo').value || itemDate <= dateTo);
+                
+                return matchSearch && matchRisk && matchTienda && matchDate;
+            });
+            
+            displayResults();
+        }
+        
+        // MOSTRAR RESULTADOS
+        function displayResults() {
+            const tbody = document.getElementById('tableBody');
+            
+            if (filteredData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="no-results"><div class="no-results-icon">✅</div><p>No hay resultados</p></td></tr>';
+                document.getElementById('resultCount').textContent = 'Resultados: 0';
                 return;
             }
             
-            const matches = allData.filter(item => item.telefono === query);
+            tbody.innerHTML = filteredData.map(item => `
+                <tr>
+                    <td><strong>${item.telefono}</strong></td>
+                    <td>${item.nombre}</td>
+                    <td>${item.fecha}</td>
+                    <td><span class="badge ${item.tienda === 'Forstore' ? 'badge-forstore' : 'badge-voladoz'}">${item.tienda}</span></td>
+                    <td><strong>${item.intentos}</strong></td>
+                    <td><span class="badge badge-${item.riesgo}">${item.riesgo.toUpperCase()}</span></td>
+                </tr>
+            `).join('');
             
-            if (matches.length === 0) {
-                resultsDiv.innerHTML = `
-                    <div style="text-align: center; padding: 40px 20px;">
-                        <div style="font-size: 48px; margin-bottom: 15px;">✅</div>
-                        <h3 style="color: #51cf66; font-size: 20px; margin-bottom: 10px;">Cliente Seguro</h3>
-                        <p style="color: #666;">No está en lista negra</p>
-                    </div>
-                `;
-                return;
-            }
+            document.getElementById('resultCount').textContent = `Resultados: ${filteredData.length}`;
+        }
+        
+        // LIMPIAR FILTROS
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('dateFrom').value = '';
+            document.getElementById('dateTo').value = '';
+            document.getElementById('riskFilter').value = '';
+            document.getElementById('tiendaFilter').value = '';
+            filteredData = [];
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="6" class="no-results">Ingresa criterios de búsqueda</td></tr>';
+            document.getElementById('resultCount').textContent = 'Resultados: 0';
+        }
+        
+        // EXPORTAR RESULTADOS
+        function exportTableResults() {
+            const data = filteredData.length > 0 ? filteredData : allData;
+            let csv = 'Teléfono,Nombre,Fecha,Tienda,Intentos,Riesgo\n';
+            data.forEach(item => {
+                csv += `${item.telefono},"${item.nombre}",${item.fecha},${item.tienda},${item.intentos},${item.riesgo}\n`;
+            });
             
-            const frecuencia = matches.length;
-            const sorted = matches.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-            const cliente = matches[0];
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `no-entregados-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+        
+        // SORT TABLE
+        function sortTable(columnIndex) {
+            filteredData.sort((a, b) => {
+                const keys = ['telefono', 'nombre', 'fecha', 'tienda', 'intentos'];
+                const key = keys[columnIndex];
+                const aVal = a[key];
+                const bVal = b[key];
+                
+                if (typeof aVal === 'string') {
+                    return aVal.localeCompare(bVal);
+                }
+                return aVal - bVal;
+            });
+            displayResults();
+        }
+        
+        // ESTADÍSTICAS
+        function updateStatistics() {
+            const unique = [...new Set(allData.map(i => i.telefono))].length;
+            const high = [...new Set(allData.filter(i => i.riesgo === 'alto').map(i => i.telefono))].length;
+            const medium = [...new Set(allData.filter(i => i.riesgo === 'medio').map(i => i.telefono))].length;
             
-            let riskHTML = '';
-            if (frecuencia === 1) {
-                riskHTML = `
-                    <div class="risk-medium">
-                        <div class="icon">⚠️</div>
-                        <h2>RIESGO MEDIO</h2>
-                        <p>1 intento fallido anterior</p>
-                    </div>
-                `;
-            } else if (frecuencia >= 2) {
-                riskHTML = `
-                    <div class="risk-high">
-                        <div class="icon">🚨</div>
-                        <h2>RIESGO ALTO</h2>
-                        <p>${frecuencia} intentos fallidos</p>
-                    </div>
-                `;
-            }
+            document.getElementById('statTotal').textContent = allData.length;
+            document.getElementById('statUnique').textContent = unique;
+            document.getElementById('statHigh').textContent = high;
+            document.getElementById('statMedium').textContent = medium;
+        }
+        
+        // GRÁFICOS
+        function updateCharts() {
+            const riskData = {
+                alto: [...new Set(allData.filter(i => i.riesgo === 'alto').map(i => i.telefono))].length,
+                medio: [...new Set(allData.filter(i => i.riesgo === 'medio').map(i => i.telefono))].length,
+                bajo: [...new Set(allData.filter(i => i.riesgo === 'bajo').map(i => i.telefono))].length
+            };
             
-            let html = riskHTML + `
-                <div class="result-header">
-                    <h3>👤 ${cliente.nombre}</h3>
-                    <p><strong>☎️ Teléfono:</strong> ${cliente.telefono}</p>
-                    <p><strong>🏪 Tienda:</strong> ${cliente.tienda}</p>
-                    <div class="frequency-badge ${frecuencia === 1 ? 'medium' : 'high'}">
-                        ${frecuencia} intento${frecuencia > 1 ? 's' : ''} fallido${frecuencia > 1 ? 's' : ''}
-                    </div>
-                </div>
-                <div class="attempts">
-                    <h4>📋 Historial:</h4>
-                    ${sorted.map((item, i) => `
-                        <div class="attempt-item">
-                            <span class="date">#${i + 1}</span> 📅 ${item.fecha}
-                            <span class="store ${item.tienda === 'Forstore' ? '' : 'voladoz'}">🏢 ${item.tienda}</span>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
+            // Gráfico 1: Riesgo
+            const riskCtx = document.getElementById('riskChart').getContext('2d');
+            if (charts.risk) charts.risk.destroy();
+            charts.risk = new Chart(riskCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Alto', 'Medio', 'Bajo'],
+                    datasets: [{
+                        data: [riskData.alto, riskData.medio, riskData.bajo],
+                        backgroundColor: ['#dc3545', '#ffc107', '#51cf66'],
+                        borderColor: 'white',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
             
-            resultsDiv.innerHTML = html;
+            // Gráfico 2: Tienda
+            const tiendaCounts = allData.reduce((acc, item) => {
+                acc[item.tienda] = (acc[item.tienda] || 0) + 1;
+                return acc;
+            }, {});
+            
+            const tiendaCtx = document.getElementById('tiendaChart').getContext('2d');
+            if (charts.tienda) charts.tienda.destroy();
+            charts.tienda = new Chart(tiendaCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(tiendaCounts),
+                    datasets: [{
+                        label: 'Registros',
+                        data: Object.values(tiendaCounts),
+                        backgroundColor: '#667eea',
+                        borderColor: '#764ba2',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+            
+            // Gráfico 3: Top 10
+            const topClients = [...new Set(allData.map(i => i.telefono))]
+                .map(phone => ({
+                    phone,
+                    count: allData.filter(i => i.telefono === phone).length
+                }))
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 10);
+            
+            const topCtx = document.getElementById('topChart').getContext('2d');
+            if (charts.top) charts.top.destroy();
+            charts.top = new Chart(topCtx, {
+                type: 'horizontalBar',
+                data: {
+                    labels: topClients.map(i => i.phone),
+                    datasets: [{
+                        label: 'Intentos',
+                        data: topClients.map(i => i.count),
+                        backgroundColor: '#764ba2',
+                        borderColor: '#667eea',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { x: { beginAtZero: true } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+        
+        // DRAG AND DROP
+        const uploadArea = document.getElementById('uploadArea');
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            document.getElementById('fileInput').files = e.dataTransfer.files;
+            showFileIndicator();
         });
         
-        // PROCESAR ARCHIVO CON BARRA DE PROGRESO
+        // MOSTRAR INDICADOR DE ARCHIVO
+        document.getElementById('fileInput').addEventListener('change', showFileIndicator);
+        
+        function showFileIndicator() {
+            const file = document.getElementById('fileInput').files[0];
+            if (file) {
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('fileSize').textContent = (file.size / 1024).toFixed(2) + ' KB';
+                document.getElementById('fileIndicator').classList.add('show');
+            }
+        }
+        
+        function clearFile() {
+            document.getElementById('fileInput').value = '';
+            document.getElementById('fileIndicator').classList.remove('show');
+        }
+        
+        // PROCESAR ARCHIVO
         function processFile() {
-            const fileInput = document.getElementById('fileInput');
-            const file = fileInput.files[0];
-            
+            const file = document.getElementById('fileInput').files[0];
             if (!file) {
                 alert('Por favor sube un archivo');
                 return;
             }
             
-            // Mostrar barra de progreso
             const progressContainer = document.getElementById('progressContainer');
             const progressFill = document.getElementById('progressFill');
             const progressText = document.getElementById('progressText');
-            const uploadBtn = document.getElementById('uploadBtn');
             
-            progressContainer.style.display = 'block';
-            uploadBtn.disabled = true;
+            progressContainer.classList.add('show');
             progressFill.style.width = '10%';
             progressText.textContent = 'Leyendo archivo...';
             
@@ -688,7 +1103,6 @@
                 progressFill.style.width = '50%';
                 progressText.textContent = 'Comparando con base de datos...';
                 
-                // Procesar matches
                 const resultados = {
                     total: phonesFromFile.length,
                     encontrados: 0,
@@ -705,21 +1119,19 @@
                         resultados.noEncontrados++;
                     } else {
                         resultados.encontrados++;
-                        if (matches.length >= 2) {
-                            resultados.riesgoAlto++;
-                        } else {
-                            resultados.riesgoMedio++;
-                        }
+                        const riesgo = matches[0].riesgo;
+                        if (riesgo === 'alto') resultados.riesgoAlto++;
+                        else if (riesgo === 'medio') resultados.riesgoMedio++;
+                        
                         resultados.matches.push({
                             telefono: phone,
                             nombre: matches[0].nombre,
                             tienda: matches[0].tienda,
                             intentos: matches.length,
-                            riesgo: matches.length >= 2 ? 'alto' : 'medio'
+                            riesgo: riesgo
                         });
                     }
                     
-                    // Actualizar progreso
                     const progreso = 50 + (index / phonesFromFile.length) * 50;
                     progressFill.style.width = progreso + '%';
                 });
@@ -727,75 +1139,71 @@
                 progressFill.style.width = '100%';
                 progressText.textContent = '✓ Verificación completada';
                 
-                // Ocultar barra después de 1.5 segundos
                 setTimeout(() => {
-                    progressContainer.style.display = 'none';
-                    uploadBtn.disabled = false;
+                    progressContainer.classList.remove('show');
                     progressFill.style.width = '0%';
                 }, 1500);
                 
-                // Mostrar resultados
-                let html = `
-                    <div class="summary-stats">
-                        <h3 style="margin-bottom: 15px; color: #333;">📊 Resumen de Verificación</h3>
-                        <div class="stat-row">
-                            <span class="stat-label">Total números procesados:</span>
-                            <span class="stat-value">${resultados.total}</span>
-                        </div>
-                        <div class="stat-row">
-                            <span class="stat-label">Encontrados en lista negra:</span>
-                            <span class="stat-value danger">${resultados.encontrados}</span>
-                        </div>
-                        <div class="stat-row">
-                            <span class="stat-label">No encontrados (seguros):</span>
-                            <span class="stat-value" style="color: #51cf66;">${resultados.noEncontrados}</span>
-                        </div>
-                        <div class="stat-row">
-                            <span class="stat-label">Riesgo Alto:</span>
-                            <span class="stat-value danger">${resultados.riesgoAlto}</span>
-                        </div>
-                        <div class="stat-row">
-                            <span class="stat-label">Riesgo Medio:</span>
-                            <span class="stat-value warning">${resultados.riesgoMedio}</span>
-                        </div>
-                    </div>
-                    
-                    <h3 style="color: #333; margin-bottom: 15px; margin-top: 20px;">⚠️ Números en Lista Negra:</h3>
-                `;
-                
-                if (resultados.matches.length === 0) {
-                    html += '<div class="no-results">✅ Todos los números son seguros</div>';
-                } else {
-                    html += resultados.matches.map(match => `
-                        <div class="result-header">
-                            <h4>👤 ${match.nombre}</h4>
-                            <p><strong>☎️:</strong> ${match.telefono}</p>
-                            <p><strong>🏪:</strong> ${match.tienda}</p>
-                            <div class="frequency-badge ${match.riesgo === 'alto' ? 'high' : 'medium'}">
-                                ${match.intentos} intento${match.intentos > 1 ? 's' : ''} fallido${match.intentos > 1 ? 's' : ''}
-                            </div>
-                        </div>
-                    `).join('');
-                    
-                    html += `
-                        <button class="download-btn" onclick="descargarResultados(${JSON.stringify(resultados).replace(/"/g, '&quot;')})">
-                            📥 Descargar Resultados (CSV)
-                        </button>
-                    `;
-                }
-                
-                document.getElementById('batchResults').innerHTML = html;
+                displayBatchResults(resultados);
             };
             
             reader.readAsText(file);
         }
         
-        // DESCARGAR RESULTADOS
-        function descargarResultados(resultados) {
-            let csv = 'Teléfono,Nombre,Tienda,Intentos Fallidos,Riesgo\n';
+        function displayBatchResults(resultados) {
+            let html = `
+                <div class="summary-stats">
+                    <h3>📊 Resumen de Verificación</h3>
+                    <div class="stat-row">
+                        <span class="stat-row-label">Total números procesados:</span>
+                        <span class="stat-row-value">${resultados.total}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-row-label">En lista negra:</span>
+                        <span class="stat-row-value danger">${resultados.encontrados}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-row-label">Seguros (no encontrados):</span>
+                        <span class="stat-row-value success">${resultados.noEncontrados}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-row-label">Riesgo Alto:</span>
+                        <span class="stat-row-value danger">${resultados.riesgoAlto}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-row-label">Riesgo Medio:</span>
+                        <span class="stat-row-value warning">${resultados.riesgoMedio}</span>
+                    </div>
+                </div>
+            `;
             
+            if (resultados.matches.length === 0) {
+                html += '<div class="no-results"><div class="no-results-icon">✅</div><p>Todos los números son seguros</p></div>';
+            } else {
+                html += '<h3 style="color: #333; margin-bottom: 15px; margin-top: 20px;">⚠️ Números en Lista Negra:</h3>';
+                html += '<div style="overflow-x: auto;"><table class="results-table"><thead><tr><th>☎️</th><th>👤</th><th>🏪</th><th>#️⃣</th><th>⚠️</th></tr></thead><tbody>';
+                
+                html += resultados.matches.map(m => `
+                    <tr>
+                        <td><strong>${m.telefono}</strong></td>
+                        <td>${m.nombre}</td>
+                        <td><span class="badge ${m.tienda === 'Forstore' ? 'badge-forstore' : 'badge-voladoz'}">${m.tienda}</span></td>
+                        <td>${m.intentos}</td>
+                        <td><span class="badge badge-${m.riesgo}">${m.riesgo.toUpperCase()}</span></td>
+                    </tr>
+                `).join('');
+                
+                html += '</tbody></table></div>';
+                html += `<button class="download-btn" onclick="descargarResultados(${JSON.stringify(resultados).replace(/"/g, '&quot;')})">📥 Descargar Resultados (CSV)</button>`;
+            }
+            
+            document.getElementById('batchResults').innerHTML = html;
+        }
+        
+        function descargarResultados(resultados) {
+            let csv = 'Teléfono,Nombre,Tienda,Intentos,Riesgo\n';
             resultados.matches.forEach(m => {
-                csv += `${m.telefono},${m.nombre},${m.tienda},${m.intentos},${m.riesgo.toUpperCase()}\n`;
+                csv += `${m.telefono},"${m.nombre}",${m.tienda},${m.intentos},${m.riesgo}\n`;
             });
             
             const blob = new Blob([csv], { type: 'text/csv' });
@@ -806,7 +1214,7 @@
             a.click();
         }
         
-        // Cargar datos al iniciar
+        // INICIAR
         loadData();
     </script>
 </body>
